@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+}
+
+enum TeacherRole {
+  OWNER
+  CO_TEACHER
+}
+
+model User {
+  id         Int    @id @default(autoincrement())
+  firstName  String
+  middleName String
+  lastName   String
+  role       Role   @default(STUDENT)
+  email      String @unique
+  password   String
+
+  student Student?
+  teacher Teacher?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Student {
+  id   Int  @id
+  user User @relation(fields: [id], references: [id], onDelete: Cascade)
+
+  course    String
+  yearLevel Int
+
+  classroomStudents ClassroomStudent[]
+}
+
+model Teacher {
+  id   Int  @id
+  user User @relation(fields: [id], references: [id], onDelete: Cascade)
+
+  department String
+
+  classrooms        Classroom[]
+  classroomTeachers ClassroomTeacher[]
+}
+
+model Classroom {
+  id        Int    @id @default(autoincrement())
+  name      String
+  course    String
+  yearLevel Int
+
+  ownerId Int
+  owner   Teacher @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  teachers  ClassroomTeacher[]
+  students  ClassroomStudent[]
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}
+
+model ClassroomTeacher {
+  classroomId Int
+  classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+
+  teacherId Int
+  teacher   Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  role TeacherRole @default(CO_TEACHER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([classroomId, teacherId])
+}
+
+model ClassroomStudent {
+  classroomId Int
+  classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+
+  studentId Int
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([classroomId, studentId])
+}
