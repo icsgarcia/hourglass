@@ -24,8 +24,14 @@ enum TeacherRole {
   CO_TEACHER
 }
 
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
 model User {
-  id         Int    @id @default(autoincrement())
+  id         String @id @default(uuid())
   firstName  String
   middleName String
   lastName   String
@@ -36,50 +42,55 @@ model User {
   student Student?
   teacher Teacher?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  classroomInvitations ClassroomInvitation[]
 }
 
 model Student {
-  id   Int  @id
-  user User @relation(fields: [id], references: [id], onDelete: Cascade)
+  id   String @id
+  user User   @relation(fields: [id], references: [id], onDelete: Cascade)
 
   course    String
   yearLevel Int
 
   classroomStudents ClassroomStudent[]
+  attendanceLogs    AttendanceLog[]
 }
 
 model Teacher {
-  id   Int  @id
-  user User @relation(fields: [id], references: [id], onDelete: Cascade)
+  id   String @id
+  user User   @relation(fields: [id], references: [id], onDelete: Cascade)
 
   department String
 
-  classrooms        Classroom[]
-  classroomTeachers ClassroomTeacher[]
+  classrooms           Classroom[]
+  classroomTeachers    ClassroomTeacher[]
+  classroomInvitations ClassroomInvitation[]
 }
 
 model Classroom {
-  id        Int    @id @default(autoincrement())
+  id        String @id @default(uuid())
   name      String
   course    String
   yearLevel Int
 
-  ownerId Int
+  ownerId String
   owner   Teacher @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
-  teachers  ClassroomTeacher[]
-  students  ClassroomStudent[]
-  createdAt DateTime           @default(now())
-  updatedAt DateTime           @updatedAt
+  teachers             ClassroomTeacher[]
+  students             ClassroomStudent[]
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  classroomInvitations ClassroomInvitation[]
+  attendanceLogs       AttendanceLog[]
 }
 
 model ClassroomTeacher {
-  classroomId Int
+  classroomId String
   classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
 
-  teacherId Int
+  teacherId String
   teacher   Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
 
   role TeacherRole @default(CO_TEACHER)
@@ -91,14 +102,55 @@ model ClassroomTeacher {
 }
 
 model ClassroomStudent {
-  classroomId Int
+  classroomId String
   classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
 
-  studentId Int
+  studentId String
   student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@id([classroomId, studentId])
+}
+
+model ClassroomInvitation {
+  id String @id @default(uuid())
+
+  classroomId String
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+
+  invitedById String
+  invitedBy   Teacher @relation(fields: [invitedById], references: [id])
+
+  invitedUserId String
+  invitedUser   User   @relation(fields: [invitedUserId], references: [id])
+
+  role   Role
+  status InvitationStatus @default(PENDING)
+
+  createdAt   DateTime  @default(now())
+  respondedAt DateTime?
+
+  @@unique([classroomId, invitedUserId])
+}
+
+model AttendanceLog {
+  id String @id @default(uuid())
+
+  classroomId String
+  classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+
+  studentId String
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  date    DateTime
+  timeIn  DateTime
+  timeOut DateTime?
+
+  totalMinutes Int?
+
+  createdAt DateTime @default(now())
+
+  @@unique([classroomId, studentId, date])
 }

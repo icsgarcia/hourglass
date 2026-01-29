@@ -15,6 +15,7 @@ import { AuthGuard } from '../auth/auth.guard';
 export class ClassroomsController {
   constructor(private classroomsService: ClassroomsService) {}
 
+  // Classroom
   @UseGuards(AuthGuard)
   @Post()
   createClassroom(@Body() ClassroomRequestDto: any, @Request() req) {
@@ -31,7 +32,48 @@ export class ClassroomsController {
 
   @UseGuards(AuthGuard)
   @Delete(':id')
-  deleteClassroom(@Param('id') id: number) {
+  deleteClassroom(@Param('id') id: string) {
     return this.classroomsService.deleteClassroomById(id);
+  }
+
+  // Classroom Invitations
+  // add that role === teacher can only do this
+  @UseGuards(AuthGuard)
+  @Post(':classroomId/invite')
+  createClassroomInvite(
+    @Param('classroomId') classroomId: string,
+    @Body() classroomInviteDto,
+    @Request() req,
+  ) {
+    return this.classroomsService.createClassroomInvite(
+      classroomId,
+      classroomInviteDto.email,
+      classroomInviteDto.role,
+      req.user.sub,
+    );
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('invitations/:invitationId/accept')
+  acceptClassroomInvite(
+    @Param('invitationId') invitationId: string,
+    @Request() req,
+  ) {
+    return this.classroomsService.acceptClassroomInvite(
+      invitationId,
+      req.user.sub,
+    );
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('invitations/:invitationId/reject')
+  rejectClassroomInvite(
+    @Param('invitationId') invitationId: string,
+    @Request() req,
+  ) {
+    return this.classroomsService.rejectClassroomInvite(
+      invitationId,
+      req.user.sub,
+    );
   }
 }
