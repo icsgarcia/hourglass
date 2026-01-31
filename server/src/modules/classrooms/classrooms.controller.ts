@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   ForbiddenException,
+  Get,
   Param,
   Post,
   Request,
@@ -16,6 +17,21 @@ export class ClassroomsController {
   constructor(private classroomsService: ClassroomsService) {}
 
   // Classroom
+  @UseGuards(AuthGuard)
+  @Get()
+  getClassroomsByUser(@Request() req) {
+    return this.classroomsService.getClassroomByUser(
+      req.user.sub,
+      req.user.role,
+    );
+  }
+
+  @UseGuards(AuthGuard)
+  @Get(`:classroomId`)
+  getClassroomsById(@Param('classroomId') classroomId: string) {
+    return this.classroomsService.getClassroomById(classroomId);
+  }
+
   @UseGuards(AuthGuard)
   @Post()
   createClassroom(@Body() ClassroomRequestDto: any, @Request() req) {

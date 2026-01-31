@@ -17,12 +17,12 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  signIn(@Body() signInDto: Record<string, any>) {
+  signIn(@Body() signInDto) {
     return this.authService.signIn(signInDto.email, signInDto.password);
   }
 
   @Post('register')
-  signUp(@Body() signUpDto: Record<string, any>) {
+  signUp(@Body() signUpDto) {
     return this.authService.signUp(
       signUpDto.firstName,
       signUpDto.middleName,

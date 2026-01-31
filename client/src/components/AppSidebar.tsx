@@ -3,6 +3,7 @@ import { Home, Inbox } from "lucide-react";
 import {
     Sidebar,
     SidebarContent,
+    SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
     SidebarGroupLabel,
@@ -10,38 +11,41 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Link } from "react-router";
+import NavUser from "./NavUser";
 
 // Menu items.
 const items = [
     {
         title: "Home",
-        url: "#",
+        url: "/",
         icon: Home,
     },
     {
         title: "Classes",
-        url: "#",
+        url: "/classrooms",
         icon: Inbox,
     },
 ];
 
 const AppSidebar = () => {
     return (
-        <Sidebar>
+        <Sidebar
+            collapsible="icon"
+            className="top-(--header-height) h-[calc(100svh-var(--header-height))]! "
+        >
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel>
-                        Internship Management System
-                    </SidebarGroupLabel>
+                    <SidebarGroupLabel>Hourglasss</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {items.map((item) => (
                                 <SidebarMenuItem key={item.title}>
                                     <SidebarMenuButton asChild>
-                                        <a href={item.url}>
+                                        <Link to={item.url}>
                                             <item.icon />
                                             <span>{item.title}</span>
-                                        </a>
+                                        </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                             ))}
@@ -49,6 +53,9 @@ const AppSidebar = () => {
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
+            <SidebarFooter>
+                <NavUser />
+            </SidebarFooter>
         </Sidebar>
     );
 };

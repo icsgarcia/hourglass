@@ -22,12 +22,112 @@ export class ClassroomsService {
       where: {
         id,
       },
+      include: {
+        owner: {
+          include: {
+            user: {
+              select: {
+                firstName: true,
+                middleName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+        teachers: {
+          include: {
+            teacher: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    firstName: true,
+                    middleName: true,
+                    lastName: true,
+                    email: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        students: {
+          include: {
+            student: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    firstName: true,
+                    middleName: true,
+                    lastName: true,
+                    email: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
     if (!classroom) {
       throw new NotFoundException('Classroom not found');
     }
 
+    console.log(classroom);
     return classroom;
+  }
+
+  async getClassroomByUser(userId: string, userRole: Role) {
+    if (userRole === 'TEACHER') {
+      return await this.prismaService.classroom.findMany({
+        where: {
+          OR: [
+            { ownerId: userId },
+            {
+              teachers: {
+                some: {
+                  teacherId: userId,
+                },
+              },
+            },
+          ],
+        },
+        include: {
+          owner: {
+            include: {
+              user: {
+                select: {
+                  firstName: true,
+                  middleName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+    }
+
+    if (userRole === 'STUDENT') {
+      return await this.prismaService.classroom.findMany({
+        where: {
+          students: {
+            some: {
+              studentId: userId,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+    }
+
+    return [];
   }
 
   async createClassroom(
