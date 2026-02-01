@@ -74,7 +74,6 @@ export class ClassroomsService {
       throw new NotFoundException('Classroom not found');
     }
 
-    console.log(classroom);
     return classroom;
   }
 
@@ -121,6 +120,19 @@ export class ClassroomsService {
             },
           },
         },
+        include: {
+          owner: {
+            include: {
+              user: {
+                select: {
+                  firstName: true,
+                  middleName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
+        },
         orderBy: {
           createdAt: 'desc',
         },
@@ -144,6 +156,38 @@ export class ClassroomsService {
         ownerId,
       },
     });
+  }
+
+  async getInvitations(userId: any) {
+    const invitations = await this.prismaService.classroomInvitation.findMany({
+      where: {
+        invitedUserId: userId,
+        status: 'PENDING',
+      },
+      include: {
+        classroom: {
+          select: {
+            id: true,
+            name: true,
+            course: true,
+            yearLevel: true,
+            owner: {
+              include: {
+                user: {
+                  select: {
+                    firstName: true,
+                    middleName: true,
+                    lastName: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return invitations;
   }
 
   async createClassroomInvite(

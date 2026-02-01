@@ -27,6 +27,12 @@ export class ClassroomsController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('invites')
+  getInvitations(@Request() req) {
+    return this.classroomsService.getInvitations(req.user.sub);
+  }
+
+  @UseGuards(AuthGuard)
   @Get(`:classroomId`)
   getClassroomsById(@Param('classroomId') classroomId: string) {
     return this.classroomsService.getClassroomById(classroomId);
@@ -52,7 +58,6 @@ export class ClassroomsController {
     return this.classroomsService.deleteClassroomById(id);
   }
 
-  // Classroom Invitations
   // add that role === teacher can only do this
   @UseGuards(AuthGuard)
   @Post(':classroomId/invite')
