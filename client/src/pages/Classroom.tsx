@@ -94,7 +94,7 @@ const Classroom = () => {
     };
     return (
         <Layout>
-            <Tabs defaultValue="overview" className="w-[400px]">
+            <Tabs defaultValue="home">
                 <TabsList>
                     <TabsTrigger value="home">Home</TabsTrigger>
                     <TabsTrigger value="people">People</TabsTrigger>
@@ -114,6 +114,12 @@ const Classroom = () => {
                     <div>
                         <h1>Teachers</h1>
                         <Separator />
+                        <p>
+                            {classroom?.owner.user.firstName}{" "}
+                            {classroom?.owner.user.middleName}{" "}
+                            {classroom?.owner.user.lastName}
+                            <p> {classroom?.owner.user.email}</p>
+                        </p>
                         {classroom?.teachers.map((teacher) => (
                             <>
                                 <div key={teacher.teacher.user.id}>

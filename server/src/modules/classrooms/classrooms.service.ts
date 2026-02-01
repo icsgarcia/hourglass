@@ -30,6 +30,7 @@ export class ClassroomsService {
                 firstName: true,
                 middleName: true,
                 lastName: true,
+                email: true,
               },
             },
           },
