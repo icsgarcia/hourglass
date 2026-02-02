@@ -26,7 +26,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const NavUser = () => {
     const { isMobile } = useSidebar();
-    const { logout } = useAuth();
+    const { user, logout } = useAuth();
     return (
         <SidebarMenu>
             <SidebarMenuItem>
@@ -39,15 +39,15 @@ const NavUser = () => {
                             <Avatar className="h-8 w-8 rounded-lg">
                                 <AvatarImage src={"avatar"} alt={"avatar"} />
                                 <AvatarFallback className="rounded-lg">
-                                    CN
+                                    {user?.id}
                                 </AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
                                 <span className="truncate font-medium">
-                                    {"name"}
+                                    {`${user?.firstName} ${user?.middleName} ${user?.lastName}`}
                                 </span>
                                 <span className="truncate text-xs">
-                                    {"email"}
+                                    {user?.email}
                                 </span>
                             </div>
                             <ChevronsUpDown className="ml-auto size-4" />
@@ -67,41 +67,25 @@ const NavUser = () => {
                                         alt={"avatar"}
                                     />
                                     <AvatarFallback className="rounded-lg">
-                                        CN
+                                        {user?.id}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <span className="truncate font-medium">
-                                        {"name"}
+                                        {`${user?.firstName} ${user?.middleName} ${user?.lastName}`}
                                     </span>
                                     <span className="truncate text-xs">
-                                        {"email"}
+                                        {user?.email}
                                     </span>
                                 </div>
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <Sparkles />
-                                Upgrade to Pro
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <BadgeCheck />
-                                Account
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <CreditCard />
-                                Billing
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Bell />
-                                Notifications
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
+
+                        <DropdownMenuItem>
+                            <BadgeCheck />
+                            Account
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={logout}>
                             <LogOut />

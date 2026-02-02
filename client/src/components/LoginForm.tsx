@@ -42,6 +42,9 @@ const LoginForm = () => {
             const payload = JSON.parse(atob(data.accessToken.split(".")[1]));
             loginUser(data.accessToken, {
                 id: payload.sub,
+                firstName: payload.firstName,
+                middleName: payload.middleName,
+                lastName: payload.lastName,
                 email: payload.email,
                 role: payload.role,
             });

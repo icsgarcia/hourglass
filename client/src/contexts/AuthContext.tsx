@@ -9,6 +9,9 @@ import { setAuthToken } from "@/services/axios";
 
 interface User {
     id: string;
+    firstName: string;
+    middleName: string;
+    lastName: string;
     email: string;
     role: string;
 }
@@ -34,6 +37,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const payload = JSON.parse(atob(token.split(".")[1]));
             setUser({
                 id: payload.sub,
+                firstName: payload.firstName,
+                middleName: payload.middleName,
+                lastName: payload.lastName,
                 email: payload.email,
                 role: payload.role,
             });
